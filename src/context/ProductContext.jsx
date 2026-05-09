@@ -4,6 +4,7 @@ import {
   getProductById,
   searchProducts,
   getProductsByCategory,
+  getAllCategories,
   addProduct,
   updateProduct,
   deleteProduct,
@@ -17,9 +18,9 @@ export const ProductProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
   const [skip, setSkip] = useState(0);
-  const limit = 10; // Pagination limit
+  const limit = 10;
 
-  const fetchProducts = async (params = {}) => {
+  const fetchProducts = async (params = {}, currentSkip = 0) => {
     setLoading(true);
     try {
       const { search, category, sort } = params;
@@ -29,14 +30,14 @@ export const ProductProvider = ({ children }) => {
       } else if (category) {
         data = await getProductsByCategory(category);
       } else {
-        data = await getAllProducts(limit, skip);
+        data = await getAllProducts(limit, currentSkip);
         setTotal(data.total);
       }
-      // Apply sorting if needed
       if (sort) {
         data.products.sort((a, b) => {
           if (sort === "price") return a.price - b.price;
-          if (sort === "rating") return a.rating - b.rating;
+          if (sort === "-price") return b.price - a.price;
+          if (sort === "rating") return b.rating - a.rating;
           if (sort === "title") return a.title.localeCompare(b.title);
           return 0;
         });
@@ -51,9 +52,8 @@ export const ProductProvider = ({ children }) => {
 
   const fetchCategories = async () => {
     try {
-      const data = await getAllProducts(); // Or dedicated endpoint if available
-      const uniqueCats = [...new Set(data.products.map((p) => p.category))];
-      setCategories(uniqueCats);
+      const data = await getAllCategories();
+      setCategories(data.map((cat) => cat.slug || cat));
     } catch (error) {
       console.error("Failed to fetch categories:", error);
     }
@@ -70,7 +70,7 @@ export const ProductProvider = ({ children }) => {
   const createProduct = async (productData) => {
     try {
       const newProduct = await addProduct(productData);
-      setProducts([...products, newProduct]);
+      setProducts((prev) => [...prev, newProduct]);
     } catch (error) {
       console.error("Failed to add product:", error);
     }
@@ -79,7 +79,7 @@ export const ProductProvider = ({ children }) => {
   const editProduct = async (id, productData) => {
     try {
       const updated = await updateProduct(id, productData);
-      setProducts(products.map((p) => (p.id === id ? updated : p)));
+      setProducts((prev) => prev.map((p) => (p.id === id ? updated : p)));
     } catch (error) {
       console.error("Failed to update product:", error);
     }
@@ -88,7 +88,7 @@ export const ProductProvider = ({ children }) => {
   const removeProduct = async (id) => {
     try {
       await deleteProduct(id);
-      setProducts(products.filter((p) => p.id !== id));
+      setProducts((prev) => prev.filter((p) => p.id !== id));
     } catch (error) {
       console.error("Failed to delete product:", error);
     }
@@ -96,7 +96,7 @@ export const ProductProvider = ({ children }) => {
 
   const handlePagination = (newSkip) => {
     setSkip(newSkip);
-    fetchProducts();
+    fetchProducts({}, newSkip);
   };
 
   return (
@@ -121,5 +121,3 @@ export const ProductProvider = ({ children }) => {
     </ProductContext.Provider>
   );
 };
-
-

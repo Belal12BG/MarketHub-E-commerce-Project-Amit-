@@ -7,7 +7,6 @@ import {
   ListGroup,
   Button,
   Spinner,
-  Alert,
   Image,
 } from "react-bootstrap";
 import { AuthContext } from "../../context/AuthContext";
@@ -17,11 +16,9 @@ import { toast } from "react-toastify";
 const Profile = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
-
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-   
     if (!user) {
       navigate("/login");
     } else {
@@ -44,9 +41,11 @@ const Profile = () => {
     );
   }
 
-  if (!user) {
-    return null; 
-  }
+  if (!user) return null;
+
+  const memberSince = user.birthDate
+    ? new Date(user.birthDate).toLocaleDateString()
+    : new Date().toLocaleDateString();
 
   return (
     <Container className="py-5">
@@ -115,14 +114,11 @@ const Profile = () => {
                   className="me-3"
                   size="lg"
                   onClick={() =>
-                    toast.info(
-                      "Edit profile feature coming soon! (DummyJSON mock API limitation)",
-                    )
+                    toast.info("Edit profile feature coming soon!")
                   }
                 >
                   Edit Profile
                 </Button>
-
                 <Button variant="danger" size="lg" onClick={handleLogout}>
                   Logout
                 </Button>
@@ -130,7 +126,7 @@ const Profile = () => {
             </Card.Body>
 
             <Card.Footer className="text-center text-muted small">
-              Member since: {new Date().toLocaleDateString()}
+              Member since: {memberSince}
             </Card.Footer>
           </Card>
         </Col>

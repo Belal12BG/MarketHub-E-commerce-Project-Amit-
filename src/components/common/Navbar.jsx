@@ -1,13 +1,27 @@
 import React, { useContext } from "react";
-import { Navbar, Nav, Container, Button } from "react-bootstrap";
+import { Navbar, Nav, Container, Button, Badge } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import { FiShoppingCart, FiUser, FiHome, FiShoppingBag } from "react-icons/fi";
+import { CartContext } from "../../context/CartContext";
+import { ThemeContext } from "../../context/ThemeContext";
+import {
+  FiShoppingCart,
+  FiUser,
+  FiHome,
+  FiShoppingBag,
+  FiSun,
+  FiMoon,
+} from "react-icons/fi";
 import { MdDashboard } from "react-icons/md";
 
 const CustomNavbar = () => {
   const { user, logout } = useContext(AuthContext);
+  const { userCart } = useContext(CartContext);
+  const { isDark, toggleTheme } = useContext(ThemeContext);
   const navigate = useNavigate();
+
+  const cartCount =
+    userCart?.products?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
   const handleLogout = () => {
     logout();
@@ -60,21 +74,80 @@ const CustomNavbar = () => {
             )}
           </Nav>
 
-          <Nav className="align-items-center">
+          <Nav className="align-items-center gap-2">
+            {/* Dark Mode Toggle */}
+            <button
+              onClick={toggleTheme}
+              style={{
+                background: isDark
+                  ? "linear-gradient(135deg, #f6d365 0%, #fda085 100%)"
+                  : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                border: "none",
+                borderRadius: "50px",
+                width: "52px",
+                height: "28px",
+                cursor: "pointer",
+                position: "relative",
+                transition: "all 0.3s ease",
+                display: "flex",
+                alignItems: "center",
+                padding: "0 4px",
+                justifyContent: isDark ? "flex-end" : "flex-start",
+              }}
+              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              <span
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  borderRadius: "50%",
+                  background: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "11px",
+                  transition: "all 0.3s ease",
+                  boxShadow: "0 1px 4px rgba(0,0,0,0.3)",
+                }}
+              >
+                {isDark ? "☀️" : "🌙"}
+              </span>
+            </button>
+
             {user ? (
               <>
+                {/* Cart with badge */}
                 <Nav.Link
                   as={Link}
                   to="/cart"
-                  className="me-3 d-flex align-items-center"
+                  className="d-flex align-items-center position-relative px-2"
                 >
                   <FiShoppingCart size={22} />
+                  {cartCount > 0 && (
+                    <Badge
+                      bg="danger"
+                      pill
+                      style={{
+                        position: "absolute",
+                        top: "-4px",
+                        right: "-2px",
+                        fontSize: "0.65rem",
+                        minWidth: "18px",
+                        height: "18px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {cartCount > 99 ? "99+" : cartCount}
+                    </Badge>
+                  )}
                 </Nav.Link>
 
                 <Nav.Link
                   as={Link}
                   to="/profile"
-                  className="me-2 d-flex align-items-center"
+                  className="d-flex align-items-center"
                 >
                   <FiUser className="me-1" size={18} />
                   <span className="fw-medium">{user.username}</span>
@@ -91,10 +164,9 @@ const CustomNavbar = () => {
               </>
             ) : (
               <>
-                <Nav.Link as={Link} to="/login" className="me-2 fw-medium">
+                <Nav.Link as={Link} to="/login" className="fw-medium">
                   Login
                 </Nav.Link>
-
                 <Button
                   as={Link}
                   to="/register"

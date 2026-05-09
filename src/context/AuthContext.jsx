@@ -1,37 +1,25 @@
-import React, { createContext, useState, useEffect } from "react";
-import { loginUser, registerUser, getAuthUser } from "../services/authService";
+import React, { createContext, useState } from "react";
+import { loginUser, registerUser } from "../services/authService";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      fetchUser(token);
-    } else {
-      setLoading(false);
-    }
-  }, []);
-
-  const fetchUser = async (token) => {
+  const [user, setUser] = useState(() => {
     try {
-      const userData = await getAuthUser(token);
-      setUser(userData);
-    } catch (error) {
-      console.error("Failed to fetch user:", error);
-      localStorage.removeItem("token");
-    } finally {
-      setLoading(false);
+      const savedUser = localStorage.getItem("user");
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch {
+      return null;
     }
-  };
+  });
+
+  const loading = false;
 
   const login = async (credentials) => {
     try {
       const data = await loginUser(credentials);
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data));
       setUser(data);
       return data;
     } catch (error) {
@@ -52,6 +40,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
   };
 

@@ -1,10 +1,26 @@
 import React, { useContext } from "react";
 import { Card, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CartContext } from "../../context/CartContext";
+import { AuthContext } from "../../context/AuthContext";
+import { toast } from "react-toastify";
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useContext(CartContext);
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleAddToCart = () => {
+    if (!user) {
+      toast.warn("Please login first to add items to your cart!", {
+        onClick: () => navigate("/login"),
+        style: { cursor: "pointer" },
+      });
+      return;
+    }
+    addToCart(product);
+    toast.success(`${product.title} added to cart!`);
+  };
 
   return (
     <Card
@@ -32,7 +48,7 @@ const ProductCard = ({ product }) => {
           </Link>
           <Button
             variant="primary"
-            onClick={() => addToCart(product)}
+            onClick={handleAddToCart}
             className="flex-grow-1"
           >
             Add to Cart

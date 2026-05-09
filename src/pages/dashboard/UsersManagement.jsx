@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Spinner, Alert } from "react-bootstrap";
+import { Table, Button, Spinner, Alert, Badge } from "react-bootstrap";
 import { getAllUsers } from "../../services/userService";
 import { toast } from "react-toastify";
 
@@ -9,19 +9,17 @@ const UsersManagement = () => {
 
   useEffect(() => {
     getAllUsers(0, 100)
-      .then((data) => {
-        setUsers(data.users || []);
-      })
-      .catch(() => {
-        toast.error("Failed to load users");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      .then((data) => setUsers(data.users || []))
+      .catch(() => toast.error("Failed to load users"))
+      .finally(() => setLoading(false));
   }, []);
 
-  const handleDelete = () => {
-    toast.info("User delete successfully");
+  const handleDelete = (userId) => {
+    if (window.confirm("Are you sure? This is a mock action only.")) {
+      toast.warning(
+        `User ${userId} delete is mocked — DummyJSON does not support real deletion.`,
+      );
+    }
   };
 
   if (loading) {
@@ -70,8 +68,12 @@ const UsersManagement = () => {
                 <Button variant="warning" size="sm" className="me-2" disabled>
                   Edit
                 </Button>
-                <Button variant="danger" size="sm" onClick={handleDelete}>
-                  Delete (Mock)
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => handleDelete(user.id)}
+                >
+                  Delete
                 </Button>
               </td>
             </tr>
@@ -80,8 +82,8 @@ const UsersManagement = () => {
       </Table>
 
       <Alert variant="light" className="mt-4">
-        <strong>Note:</strong> Edit & Delete operations are mock only because
-        DummyJSON API does not support real user modifications.
+        <strong>Note:</strong> Edit & Delete are mock only — DummyJSON API does
+        not support real user modifications.
       </Alert>
     </div>
   );

@@ -13,6 +13,7 @@ import {
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ProductContext } from "../../context/ProductContext";
 import { CartContext } from "../../context/CartContext";
+import { AuthContext } from "../../context/AuthContext";
 import { formatPrice, truncateText } from "../../utils/helpers";
 import { toast } from "react-toastify";
 
@@ -20,6 +21,7 @@ const ProductDetails = () => {
   const { id } = useParams();
   const { fetchProduct } = useContext(ProductContext);
   const { addToCart } = useContext(CartContext);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
@@ -41,11 +43,17 @@ const ProductDetails = () => {
         setLoading(false);
       }
     };
-
     loadProduct();
-  }, [id, fetchProduct]);
+  }, [id]);
 
   const handleAddToCart = () => {
+    if (!user) {
+      toast.warn("Please login first to add items to your cart!", {
+        onClick: () => navigate("/login"),
+        style: { cursor: "pointer" },
+      });
+      return;
+    }
     if (product) {
       addToCart(product);
       toast.success(`${product.title} added to cart!`);
@@ -87,7 +95,7 @@ const ProductDetails = () => {
       </Button>
 
       <Row>
-        {/* Images Section */}
+        {/* Images */}
         <Col md={6}>
           <Card className="border-0 shadow-sm">
             {product.images && product.images.length > 0 ? (
@@ -118,7 +126,7 @@ const ProductDetails = () => {
           </Card>
         </Col>
 
-        {/* Details Section */}
+        {/* Details */}
         <Col md={6}>
           <h1 className="mb-3">{product.title}</h1>
 

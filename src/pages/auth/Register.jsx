@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Container,
   Row,
@@ -10,9 +10,10 @@ import {
 } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { registerUser } from "../../services/authService"; 
+import { AuthContext } from "../../context/AuthContext";
 
 const Register = () => {
+  const { register } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -35,7 +36,6 @@ const Register = () => {
     setLoading(true);
     setError(null);
 
-  
     if (formData.password.length < 6) {
       setError("Password must be at least 6 characters");
       setLoading(false);
@@ -43,15 +43,13 @@ const Register = () => {
     }
 
     try {
-
-      const newUser = await registerUser({
+      const newUser = await register({
         firstName: formData.firstName,
         lastName: formData.lastName,
         username: formData.username,
         email: formData.email,
         password: formData.password,
       });
-
       toast.success(`Account created! Username: ${newUser.username}`);
       toast.info("Now please login with your credentials");
       navigate("/login");

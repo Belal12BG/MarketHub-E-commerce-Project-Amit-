@@ -5,6 +5,35 @@
   box-sizing: border-box;
 }
 
+/* ===== THEME VARIABLES ===== */
+:root {
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --input-bg: #ffffff;
+  --input-border: #ced4da;
+  --navbar-bg: #212529;
+  --heading-color: #1a1a1a;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #0f1117;
+  --bg-secondary: #1a1d27;
+  --bg-card: #1e2130;
+  --text-primary: #e8eaf0;
+  --text-secondary: #9aa0b4;
+  --border-color: #2d3148;
+  --shadow-color: rgba(0, 0, 0, 0.4);
+  --input-bg: #1e2130;
+  --input-border: #2d3148;
+  --navbar-bg: #0d0f18;
+  --heading-color: #e8eaf0;
+}
+
 body {
   font-family:
     "Poppins",
@@ -16,13 +45,16 @@ body {
     Ubuntu,
     Cantarell,
     sans-serif;
-  background-color: #f8f9fa;
-  color: #212529;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
-/* Typography */
+/* ==================== Typography ==================== */
 h1,
 h2,
 h3,
@@ -31,7 +63,8 @@ h5,
 h6 {
   font-weight: 600;
   margin-bottom: 1rem;
-  color: #1a1a1a;
+  color: var(--heading-color);
+  transition: color 0.3s ease;
 }
 
 p {
@@ -48,7 +81,7 @@ a:hover {
   color: #0d6efd;
 }
 
-/* ==================== Layout & Containers ==================== */
+/* ==================== Layout ==================== */
 .min-vh-100 {
   min-height: 100vh;
 }
@@ -57,20 +90,22 @@ a:hover {
   flex-grow: 1;
 }
 
-/* ==================== Cards & Shadows ==================== */
+/* ==================== Cards ==================== */
 .card {
   border: none;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  background-color: var(--bg-card);
+  box-shadow: 0 4px 15px var(--shadow-color);
   transition:
     transform 0.3s ease,
-    box-shadow 0.3s ease;
+    box-shadow 0.3s ease,
+    background-color 0.3s ease;
 }
 
 .card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 12px 30px var(--shadow-color);
 }
 
 .card-img-top {
@@ -88,6 +123,11 @@ a:hover {
   font-size: 1.1rem;
   margin-bottom: 0.75rem;
   line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.card-text {
+  color: var(--text-primary);
 }
 
 /* ==================== Buttons ==================== */
@@ -119,7 +159,9 @@ a:hover {
 
 /* ==================== Navbar ==================== */
 .navbar {
+  background-color: var(--navbar-bg) !important;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
 }
 
 .navbar-brand {
@@ -149,7 +191,7 @@ footer a:hover {
   color: #ffffff;
 }
 
-/* ==================== Category Cards (Home Page) ==================== */
+/* ==================== Category Cards ==================== */
 .category-card {
   border-radius: 16px;
   overflow: hidden;
@@ -158,7 +200,7 @@ footer a:hover {
 
 .category-card:hover {
   transform: scale(1.06);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 25px var(--shadow-color);
 }
 
 .category-card img {
@@ -167,7 +209,7 @@ footer a:hover {
   object-fit: cover;
 }
 
-/* ==================== Product Card Improvements ==================== */
+/* ==================== Product Cards ==================== */
 .product-card {
   border-radius: 16px;
   overflow: hidden;
@@ -179,7 +221,7 @@ footer a:hover {
 .product-card .card-img-top {
   height: 240px;
   object-fit: contain;
-  background-color: #f8f9fa;
+  background-color: var(--bg-secondary);
   padding: 15px;
 }
 
@@ -194,7 +236,7 @@ footer a:hover {
   margin-top: auto;
 }
 
-/* ==================== Carousel (Hero) ==================== */
+/* ==================== Carousel ==================== */
 .carousel-item img {
   object-fit: cover;
   height: 70vh;
@@ -206,7 +248,7 @@ footer a:hover {
   border-radius: 12px;
 }
 
-/* ==================== Responsive Adjustments ==================== */
+/* ==================== Responsive ==================== */
 @media (max-width: 768px) {
   .carousel-item img {
     height: 50vh;
@@ -222,7 +264,7 @@ footer a:hover {
   }
 }
 
-/* ==================== Toastify Custom ==================== */
+/* ==================== Toastify ==================== */
 .Toastify__toast {
   border-radius: 10px;
   font-family: "Poppins", sans-serif;
@@ -234,4 +276,198 @@ footer a:hover {
 
 .Toastify__toast--error {
   background: linear-gradient(135deg, #dc3545, #c82333);
+}
+
+/* ==================== Dark Mode — Body & Background ==================== */
+[data-theme="dark"] body {
+  background-color: var(--bg-primary) !important;
+}
+
+[data-theme="dark"] #root {
+  background-color: var(--bg-primary) !important;
+  min-height: 100vh;
+}
+
+[data-theme="dark"] .home-page,
+[data-theme="dark"] main,
+[data-theme="dark"] section {
+  background-color: var(--bg-primary) !important;
+}
+
+[data-theme="dark"] .container,
+[data-theme="dark"] .container-fluid,
+[data-theme="dark"] .container-lg,
+[data-theme="dark"] .container-md,
+[data-theme="dark"] .container-sm,
+[data-theme="dark"] .container-xl {
+  background-color: transparent !important;
+  color: var(--text-primary) !important;
+}
+
+/* ==================== Dark Mode — Bootstrap Overrides ==================== */
+[data-theme="dark"] .bg-light {
+  background-color: var(--bg-secondary) !important;
+}
+
+[data-theme="dark"] .bg-white {
+  background-color: var(--bg-card) !important;
+}
+
+[data-theme="dark"] .border {
+  border-color: var(--border-color) !important;
+}
+
+/* ==================== Dark Mode — Cards ==================== */
+[data-theme="dark"] .card {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .card-title,
+[data-theme="dark"] .card-text {
+  color: var(--text-primary) !important;
+}
+
+/* ==================== Dark Mode — Text ==================== */
+[data-theme="dark"] .text-muted {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .text-dark {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6,
+[data-theme="dark"] p,
+[data-theme="dark"] span,
+[data-theme="dark"] li {
+  color: var(--text-primary);
+}
+
+/* ==================== Dark Mode — Forms ==================== */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .form-control::placeholder {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus {
+  background-color: var(--input-bg) !important;
+  border-color: #667eea !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+}
+
+/* ==================== Dark Mode — Tables ==================== */
+[data-theme="dark"] .table {
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > * {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .table-hover > tbody > tr:hover > * {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] .table-dark th {
+  background-color: #0d0f18 !important;
+}
+
+/* ==================== Dark Mode — Modals ==================== */
+[data-theme="dark"] .modal-content {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer {
+  border-color: var(--border-color) !important;
+}
+
+/* ==================== Dark Mode — List Group ==================== */
+[data-theme="dark"] .list-group-item {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ==================== Dark Mode — Alerts ==================== */
+[data-theme="dark"] .alert-info {
+  background-color: rgba(13, 202, 240, 0.1) !important;
+  border-color: rgba(13, 202, 240, 0.2) !important;
+  color: #6edff6 !important;
+}
+
+[data-theme="dark"] .alert-danger {
+  background-color: rgba(220, 53, 69, 0.1) !important;
+  border-color: rgba(220, 53, 69, 0.2) !important;
+  color: #ea868f !important;
+}
+
+[data-theme="dark"] .alert-light {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ==================== Dark Mode — Pagination ==================== */
+[data-theme="dark"] .page-link {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  color: #667eea !important;
+}
+
+[data-theme="dark"] .page-item.active .page-link {
+  background-color: #667eea !important;
+  border-color: #667eea !important;
+  color: white !important;
+}
+
+/* ==================== Dark Mode — Dropdown ==================== */
+[data-theme="dark"] .dropdown-menu {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .dropdown-item {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .dropdown-item:hover {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* ==================== Dark Mode — Scrollbar ==================== */
+[data-theme="dark"] ::-webkit-scrollbar {
+  width: 8px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #2d3148;
+  border-radius: 4px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: #667eea;
 }

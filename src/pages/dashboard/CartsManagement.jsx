@@ -1,20 +1,21 @@
-import React, { useContext, useEffect } from "react";
-import { Table, Button, Spinner, Alert, Card } from "react-bootstrap";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  Table,
+  Button,
+  Spinner,
+  Alert,
+  Modal,
+  ListGroup,
+} from "react-bootstrap";
 import { CartContext } from "../../context/CartContext";
-import { toast } from "react-toastify";
 
 const CartsManagement = () => {
   const { carts, fetchAllCarts, loading } = useContext(CartContext);
+  const [selectedCart, setSelectedCart] = useState(null);
 
   useEffect(() => {
     fetchAllCarts();
-  }, [fetchAllCarts]);
-
-  const viewCartDetails = (cart) => {
-    toast.info(
-      `Cart ID: ${cart.id} - User ID: ${cart.userId} - Products: ${cart.products.length}`,
-    );
-  };
+  }, []);
 
   if (loading) {
     return (
@@ -47,15 +48,12 @@ const CartsManagement = () => {
                 <td>{cart.id}</td>
                 <td>{cart.userId}</td>
                 <td>{cart.products.length}</td>
-                <td>
-                  {cart.totalProducts ||
-                    cart.products.reduce((sum, p) => sum + p.quantity, 0)}
-                </td>
+                <td>{cart.products.reduce((sum, p) => sum + p.quantity, 0)}</td>
                 <td>
                   <Button
                     variant="info"
                     size="sm"
-                    onClick={() => viewCartDetails(cart)}
+                    onClick={() => setSelectedCart(cart)}
                   >
                     View Details
                   </Button>
@@ -66,16 +64,34 @@ const CartsManagement = () => {
         </Table>
       )}
 
-      <Card className="mt-4 shadow-sm">
-        <Card.Body>
-          <Card.Title>Notes</Card.Title>
-          <ul className="mb-0">
-            <li>This page shows all carts from the API</li>
-            <li>Delete/update cart functionality can be added later</li>
-            <li>Use View Details to inspect individual cart items</li>
-          </ul>
-        </Card.Body>
-      </Card>
+      {/* Cart Details Modal */}
+      <Modal show={!!selectedCart} onHide={() => setSelectedCart(null)}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            Cart #{selectedCart?.id} — User {selectedCart?.userId}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <ListGroup variant="flush">
+            {selectedCart?.products.map((p) => (
+              <ListGroup.Item
+                key={p.id}
+                className="d-flex justify-content-between"
+              >
+                <span>{p.title}</span>
+                <span className="text-muted">
+                  x{p.quantity} — ${p.price}
+                </span>
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setSelectedCart(null)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

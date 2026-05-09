@@ -1,34 +1,70 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
+import { getAllCarts } from "../services/cartService";
 
 export const CartContext = createContext();
 
+const getCartKey = () => {
+  try {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      const parsed = JSON.parse(savedUser);
+      return `cart_${parsed.id}`;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+};
+
 export const CartProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
+  const [carts, setCarts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const [userCart, setUserCart] = useState({ products: [] });
+  const [userCart, setUserCart] = useState(() => {
+    try {
+      const key = getCartKey();
+      if (key) {
+        const saved = localStorage.getItem(key);
+        return saved ? JSON.parse(saved) : { products: [] };
+      }
+    } catch {
+      return { products: [] };
+    }
+    return { products: [] };
+  });
 
-  // 🔹 load cart from localStorage
+  // Save cart to localStorage whenever it changes
   useEffect(() => {
-    if (user) {
-      const savedCart = localStorage.getItem(`cart_${user.id}`);
-      setUserCart(savedCart ? JSON.parse(savedCart) : { products: [] });
-    } else {
+    const key = user ? `cart_${user.id}` : getCartKey();
+    if (key) {
+      localStorage.setItem(key, JSON.stringify(userCart));
+    }
+  }, [userCart, user]);
+
+  // Clear cart on logout
+  useEffect(() => {
+    if (!user) {
       setUserCart({ products: [] });
     }
   }, [user]);
 
-  // 🔹 save cart
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem(`cart_${user.id}`, JSON.stringify(userCart));
+  const fetchAllCarts = async () => {
+    setLoading(true);
+    try {
+      const data = await getAllCarts();
+      setCarts(data.carts || []);
+    } catch (error) {
+      console.error("Failed to fetch carts:", error);
+    } finally {
+      setLoading(false);
     }
-  }, [userCart, user]);
+  };
 
   const addToCart = (product) => {
     setUserCart((prev) => {
       const existing = prev.products.find((p) => p.id === product.id);
-
       if (existing) {
         return {
           products: prev.products.map((p) =>
@@ -36,7 +72,6 @@ export const CartProvider = ({ children }) => {
           ),
         };
       }
-
       return {
         products: [
           ...prev.products,
@@ -58,9 +93,7 @@ export const CartProvider = ({ children }) => {
     }));
   };
 
-  const clearCart = () => {
-    setUserCart({ products: [] });
-  };
+  const clearCart = () => setUserCart({ products: [] });
 
   const increaseQuantity = (productId) => {
     setUserCart((prev) => ({
@@ -90,6 +123,9 @@ export const CartProvider = ({ children }) => {
     <CartContext.Provider
       value={{
         userCart,
+        carts,
+        loading,
+        fetchAllCarts,
         addToCart,
         removeFromCart,
         clearCart,

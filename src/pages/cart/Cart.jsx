@@ -33,7 +33,7 @@ const Cart = () => {
     }
   };
 
-  // 🛒 Empty cart design
+  // Empty cart design
   if (!userCart.products.length) {
     return (
       <Container className="py-5 d-flex justify-content-center">
