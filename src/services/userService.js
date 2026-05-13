@@ -7,7 +7,7 @@ export const getAllUsers = async (limit = 10, skip = 0) => {
 
 export const getUserById = async (id) => {
   const response = await api.get(`/users/${id}`);
-  return response.data;
+  return response.data; 
 };
 
 export const searchUsers = async (query) => {
